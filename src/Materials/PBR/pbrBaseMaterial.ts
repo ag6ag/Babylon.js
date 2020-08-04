@@ -42,6 +42,8 @@ import "../../Shaders/pbr.vertex";
 import { EffectFallbacks } from '../effectFallbacks';
 import { IMaterialDetailMapDefines, DetailMapConfiguration } from '../material.detailMapConfiguration';
 
+declare type PrePassRenderer = import("../../Rendering/prePassRenderer").PrePassRenderer;
+
 const onCreatedEffectParameters = { effect: null as unknown as Effect, subMesh: null as unknown as Nullable<SubMesh> };
 
 /**
@@ -160,6 +162,9 @@ export class PBRMaterialDefines extends MaterialDefines
 
     public INSTANCES = false;
     public THIN_INSTANCES = false;
+
+    public PREPASS = false;
+    public SCENE_MRT_COUNT = 0;
 
     public NUM_BONE_INFLUENCERS = 0;
     public BonesPerMesh = 0;
@@ -673,6 +678,13 @@ export abstract class PBRBaseMaterial extends PushMaterial {
     }
 
     /**
+     * Can this material render to several textures at once
+     */
+    public get canRenderToMRT() {
+        return true;
+    }
+
+    /**
      * Force normal to face away from face.
      */
     protected _forceNormalForward = false;
@@ -796,7 +808,7 @@ export abstract class PBRBaseMaterial extends PushMaterial {
     /**
      * Defines the SubSurface parameters for the material.
      */
-    public readonly subSurface = new PBRSubSurfaceConfiguration(this._markAllSubMeshesAsTexturesDirty.bind(this));
+    public readonly subSurface: PBRSubSurfaceConfiguration;
 
     /**
      * Defines the detail map parameters for the material.
@@ -830,6 +842,7 @@ export abstract class PBRBaseMaterial extends PushMaterial {
         };
 
         this._environmentBRDFTexture = BRDFTextureTools.GetEnvironmentBRDFTexture(scene);
+        this.subSurface = new PBRSubSurfaceConfiguration(this._markAllSubMeshesAsTexturesDirty.bind(this), this._markScenePrePassDirty.bind(this), scene);
     }
 
     /**
@@ -1293,6 +1306,7 @@ export abstract class PBRBaseMaterial extends PushMaterial {
             onError: onError,
             indexParameters: { maxSimultaneousLights: this._maxSimultaneousLights, maxSimultaneousMorphTargets: defines.NUM_MORPH_INFLUENCERS },
             processFinalCode: csnrOptions.processFinalCode,
+            multiTarget: defines.PREPASS
         }, engine);
     }
 
@@ -1306,6 +1320,9 @@ export abstract class PBRBaseMaterial extends PushMaterial {
 
         // Multiview
         MaterialHelper.PrepareDefinesForMultiview(scene, defines);
+
+        // PrePass
+        MaterialHelper.PrepareDefinesForPrePass(scene, defines, this.canRenderToMRT);
 
         // Textures
         defines.METALLICWORKFLOW = this.isMetallicWorkflow();
@@ -2207,6 +2224,19 @@ export abstract class PBRBaseMaterial extends PushMaterial {
             this.clearCoat.hasTexture(texture) ||
             this.sheen.hasTexture(texture) ||
             this.anisotropy.hasTexture(texture);
+    }
+
+    /**
+     * Sets the required values to the prepass renderer.
+     * @param prePassRenderer defines the prepass renderer to setup
+     */
+    public setPrePassRenderer(prePassRenderer: PrePassRenderer): boolean {
+        if (this.subSurface.isScatteringEnabled) {
+            prePassRenderer.subSurfaceConfiguration.enabled = true;
+            prePassRenderer.materialsShouldRenderIrradiance = true;
+        }
+
+        return true;
     }
 
     /**

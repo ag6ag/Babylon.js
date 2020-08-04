@@ -21,6 +21,7 @@ import { IInspectable } from '../Misc/iInspectable';
 import { Plane } from '../Maths/math.plane';
 import { ShadowDepthWrapper } from './shadowDepthWrapper';
 
+declare type PrePassRenderer = import("../Rendering/prePassRenderer").PrePassRenderer;
 declare type Mesh = import("../Meshes/mesh").Mesh;
 declare type Animation = import("../Animations/animation").Animation;
 declare type InstancedMesh = import('../Meshes/instancedMesh').InstancedMesh;
@@ -228,6 +229,15 @@ export class Material implements IAnimatable {
      */
     @serialize()
     public state = "";
+
+    /**
+     * If the material can be rendered to several textures with MRT extension
+     */
+    public get canRenderToMRT() : boolean {
+        // By default, shaders are not compatible with MRTs
+        // Base classes should override that if their shader supports MRT
+        return false;
+    }
 
     /**
      * The alpha value of the material
@@ -1233,8 +1243,22 @@ export class Material implements IAnimatable {
     }
 
     /**
- * Indicates that we need to re-calculated for all submeshes
- */
+     * Indicates that the scene should check if the rendering now needs a prepass
+     */
+    protected _markScenePrePassDirty() {
+        if (this.getScene().blockMaterialDirtyMechanism) {
+            return;
+        }
+
+        const prePassRenderer = this.getScene().enablePrePassRenderer();
+        if (prePassRenderer) {
+            prePassRenderer.markAsDirty();
+        }
+    }
+
+    /**
+     * Indicates that we need to re-calculated for all submeshes
+     */
     protected _markAllSubMeshesAsAllDirty() {
         this._markAllSubMeshesAsDirty(Material._AllDirtyCallBack);
     }
@@ -1293,6 +1317,16 @@ export class Material implements IAnimatable {
      */
     protected _markAllSubMeshesAsTexturesAndMiscDirty() {
         this._markAllSubMeshesAsDirty(Material._TextureAndMiscDirtyCallBack);
+    }
+
+    /**
+     * Sets the required values to the prepass renderer.
+     * @param prePassRenderer defines the prepass renderer to setup.
+     * @returns true if the pre pass is needed.
+     */
+    public setPrePassRenderer(prePassRenderer: PrePassRenderer): boolean {
+        // Do Nothing by default
+        return false;
     }
 
     /**

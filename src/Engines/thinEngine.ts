@@ -28,6 +28,7 @@ import { IOfflineProvider } from '../Offline/IOfflineProvider';
 import { IEffectFallbacks } from '../Materials/iEffectFallbacks';
 import { IWebRequest } from '../Misc/interfaces/iWebRequest';
 import { CanvasGenerator } from '../Misc/canvasGenerator';
+import { PerformanceConfigurator } from './performanceConfigurator';
 
 declare type WebRequest = import("../Misc/webRequest").WebRequest;
 declare type LoadFileError = import("../Misc/fileTools").LoadFileError;
@@ -110,6 +111,11 @@ export interface EngineOptions extends WebGLContextAttributes {
      * Make the canvas XR Compatible for XR sessions
      */
     xrCompatible?: boolean;
+
+    /**
+     * Make the matrix computations to be performed in 64 bits instead of 32 bits. False by default
+     */
+    useHighPrecisionMatrix?: boolean;
 }
 
 /**
@@ -136,14 +142,14 @@ export class ThinEngine {
      */
     // Not mixed with Version for tooling purpose.
     public static get NpmPackage(): string {
-        return "babylonjs@4.2.0-alpha.20";
+        return "babylonjs@4.2.0-alpha.29";
     }
 
     /**
      * Returns the current version of the framework
      */
     public static get Version(): string {
-        return "4.2.0-alpha.20";
+        return "4.2.0-alpha.29";
     }
 
     /**
@@ -484,6 +490,8 @@ export class ThinEngine {
 
         options = options || {};
 
+        PerformanceConfigurator.SetMatrixPrecision(!!options.useHighPrecisionMatrix);
+
         if ((canvasOrContext as any).getContext) {
             canvas = <HTMLCanvasElement>canvasOrContext;
             this._renderingCanvas = canvas;
@@ -674,6 +682,15 @@ export class ThinEngine {
 
         // Detect if we are running on a faulty buggy OS.
         this._badOS = /iPad/i.test(navigator.userAgent) || /iPhone/i.test(navigator.userAgent);
+
+        // Starting with iOS 14, we can trust the browser
+        let matches = navigator.userAgent.match(/Version\/(\d+)/);
+
+        if (matches && matches.length === 2) {
+            if (parseInt(matches[1]) >= 14) {
+                this._badOS = false;
+            }
+        }
 
         // Detect if we are running on a faulty buggy desktop OS.
         this._badDesktopOS = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -1153,6 +1170,7 @@ export class ThinEngine {
             this._gl.clearColor(color.r, color.g, color.b, color.a !== undefined ? color.a : 1.0);
             mode |= this._gl.COLOR_BUFFER_BIT;
         }
+
         if (depth) {
             if (this.useReverseDepthBuffer) {
                 this._depthCullingState.depthFunc = this._gl.GREATER;
@@ -1341,8 +1359,12 @@ export class ThinEngine {
 
         // If MSAA, we need to bitblt back to main texture
         var gl = this._gl;
-
         if (texture._MSAAFramebuffer) {
+            if (texture._textureArray) {
+                // This texture is part of a MRT texture, we need to treat all attachments
+                this.unBindMultiColorAttachmentFramebuffer(texture._textureArray!, disableGenerateMipMaps, onBeforeUnbind);
+                return;
+            }
             gl.bindFramebuffer(gl.READ_FRAMEBUFFER, texture._MSAAFramebuffer);
             gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, texture._framebuffer);
             gl.blitFramebuffer(0, 0, texture.width, texture.height,
@@ -2796,8 +2818,15 @@ export class ThinEngine {
 
         // establish the file extension, if possible
         const lastDot = url.lastIndexOf('.');
-        const extension = forcedExtension ? forcedExtension : (lastDot > -1 ? url.substring(lastDot).toLowerCase() : "");
+        let extension = forcedExtension ? forcedExtension : (lastDot > -1 ? url.substring(lastDot).toLowerCase() : "");
         let loader: Nullable<IInternalTextureLoader> = null;
+
+        // Remove query string
+        let queryStringIndex = extension.indexOf("?");
+
+        if (queryStringIndex > -1) {
+            extension = extension.split("?")[0];
+        }
 
         for (const availableLoader of ThinEngine._TextureLoaders) {
             if (availableLoader.canLoad(extension, mimeType)) {

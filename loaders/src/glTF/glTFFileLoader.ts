@@ -20,6 +20,7 @@ import { GLTFValidation } from './glTFValidation';
 import { Light } from 'babylonjs/Lights/light';
 import { TransformNode } from 'babylonjs/Meshes/transformNode';
 import { RequestFileError } from 'babylonjs/Misc/fileTools';
+import { StringTools } from 'babylonjs/Misc/stringTools';
 
 interface IFileRequestInfo extends IFileRequest {
     _lengthComputable?: boolean;
@@ -232,6 +233,11 @@ export class GLTFFileLoader implements IDisposable, ISceneLoaderPluginAsync, ISc
      * Defines if the loader should create instances when multiple glTF nodes point to the same glTF mesh. Defaults to true.
      */
     public createInstances = true;
+
+    /**
+     * Defines if the loader should always compute the bounding boxes of meshes and not use the min/max values from the position accessor. Defaults to false.
+     */
+    public alwaysComputeBoundingBox = false;
 
     /**
      * Function called before loading a url referenced by the asset.
@@ -451,6 +457,8 @@ export class GLTFFileLoader implements IDisposable, ISceneLoaderPluginAsync, ISc
     private _progressCallback?: (event: ISceneLoaderProgressEvent) => void;
     private _requests = new Array<IFileRequestInfo>();
 
+    private static magicBase64Encoded = "Z2xURg"; // "glTF" base64 encoded (without the quotes!)
+
     /**
      * Name of the loader ("gltf")
      */
@@ -597,14 +605,37 @@ export class GLTFFileLoader implements IDisposable, ISceneLoaderPluginAsync, ISc
             this._log(`Loading ${fileName || ""}`);
             this._loader = this._getLoader(data);
 
+            // Prepare the asset container.
+            const container = new AssetContainer(scene);
+
             // Get materials/textures when loading to add to container
             const materials: Array<Material> = [];
             this.onMaterialLoadedObservable.add((material) => {
                 materials.push(material);
+                material.onDisposeObservable.addOnce(() => {
+                    let index = container.materials.indexOf(material);
+                    if (index > -1) {
+                        container.materials.splice(index, 1);
+                    }
+                    index = materials.indexOf(material);
+                    if (index > -1) {
+                        materials.splice(index, 1);
+                    }
+                });
             });
             const textures: Array<BaseTexture> = [];
             this.onTextureLoadedObservable.add((texture) => {
                 textures.push(texture);
+                texture.onDisposeObservable.addOnce(() => {
+                    let index = container.textures.indexOf(texture);
+                    if (index > -1) {
+                        container.textures.splice(index, 1);
+                    }
+                    index = textures.indexOf(texture);
+                    if (index > -1) {
+                        textures.splice(index, 1);
+                    }
+                });
             });
             const cameras: Array<Camera> = [];
             this.onCameraLoadedObservable.add((camera) => {
@@ -612,7 +643,6 @@ export class GLTFFileLoader implements IDisposable, ISceneLoaderPluginAsync, ISc
             });
 
             return this._loader.importMeshAsync(null, scene, true, data, rootUrl, onProgress, fileName).then((result) => {
-                const container = new AssetContainer(scene);
                 Array.prototype.push.apply(container.meshes, result.meshes);
                 Array.prototype.push.apply(container.particleSystems, result.particleSystems);
                 Array.prototype.push.apply(container.skeletons, result.skeletons);
@@ -629,13 +659,28 @@ export class GLTFFileLoader implements IDisposable, ISceneLoaderPluginAsync, ISc
 
     /** @hidden */
     public canDirectLoad(data: string): boolean {
-        return data.indexOf("asset") !== -1 && data.indexOf("version") !== -1;
+        return (data.indexOf("asset") !== -1 && data.indexOf("version") !== -1)
+                || StringTools.StartsWith(data, "data:base64," + GLTFFileLoader.magicBase64Encoded)
+                || StringTools.StartsWith(data, "data:application/octet-stream;base64," + GLTFFileLoader.magicBase64Encoded)
+                || StringTools.StartsWith(data, "data:model/gltf-binary;base64," + GLTFFileLoader.magicBase64Encoded);
     }
 
     /** @hidden */
-    public directLoad(scene: Scene, data: string): any {
+    public directLoad(scene: Scene, data: string): Promise<any> {
+        if (StringTools.StartsWith(data, "base64," + GLTFFileLoader.magicBase64Encoded) ||
+            StringTools.StartsWith(data, "application/octet-stream;base64," + GLTFFileLoader.magicBase64Encoded) ||
+            StringTools.StartsWith(data, "model/gltf-binary;base64," + GLTFFileLoader.magicBase64Encoded)) {
+            const arrayBuffer = Tools.DecodeBase64(data);
+
+            this._validate(scene, arrayBuffer);
+            return this._unpackBinaryAsync(new DataReader({
+                readAsync: (byteOffset, byteLength) => Promise.resolve(new Uint8Array(arrayBuffer, byteOffset, byteLength)),
+                byteLength: arrayBuffer.byteLength
+            }));
+        }
+
         this._validate(scene, data);
-        return { json: this._parseJson(data) };
+        return Promise.resolve({ json: this._parseJson(data) });
     }
 
     /**

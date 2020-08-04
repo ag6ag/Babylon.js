@@ -19,7 +19,7 @@ import { FloatLineComponent } from '../../../lines/floatLineComponent';
 import { TextLineComponent } from '../../../lines/textLineComponent';
 import { IAnimatable } from 'babylonjs/Animations/animatable.interface';
 import { AnimationCurveEditorComponent } from '../animations/animationCurveEditorComponent';
-import { PopupComponent } from '../animations/popupComponent';
+import { PopupComponent } from '../../../../popupComponent';
 
 interface IAnimationGridComponentProps {
   globalState: GlobalState;
@@ -152,9 +152,7 @@ export class AnimationGridComponent extends React.Component<
 
   onCloseAnimationCurveEditor(window: Window | null) {
     this._isCurveEditorOpen = false;
-    if (window === null) {
-      console.log('Window already closed');
-    } else {
+    if (window !== null) {
       window.close();
     }
   }

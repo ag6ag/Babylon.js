@@ -97,6 +97,7 @@ class _ThinInstanceDataStorage {
     public matrixBufferSize = 32 * 16; // let's start with a maximum of 32 thin instances
     public matrixData: Nullable<Float32Array>;
     public boundingVectors: Array<Vector3> = [];
+    public worldMatrices: Nullable<Matrix[]> = null;
 }
 
 /**
@@ -225,6 +226,24 @@ export class Mesh extends AbstractMesh implements IGetSetVerticesData {
 
     // Internal data
     private _internalMeshDataInfo = new _InternalMeshDataInfo();
+
+    public get computeBonesUsingShaders(): boolean {
+        return this._internalAbstractMeshDataInfo._computeBonesUsingShaders;
+    }
+    public set computeBonesUsingShaders(value: boolean) {
+        if (this._internalAbstractMeshDataInfo._computeBonesUsingShaders === value) {
+            return;
+        }
+
+        if (value && this._internalMeshDataInfo._sourcePositions && this._internalMeshDataInfo._sourceNormals) {
+            // switch from software to GPU computation: we need to reset the vertex and normal buffers that have been updated by the software process
+            this.setVerticesData(VertexBuffer.PositionKind, this._internalMeshDataInfo._sourcePositions);
+            this.setVerticesData(VertexBuffer.NormalKind, this._internalMeshDataInfo._sourceNormals);
+        }
+
+        this._internalAbstractMeshDataInfo._computeBonesUsingShaders = value;
+        this._markSubMeshesAsAttributesDirty();
+    }
 
     /**
      * An event triggered before rendering the mesh
@@ -1831,6 +1850,11 @@ export class Mesh extends AbstractMesh implements IGetSetVerticesData {
             return this;
         }
 
+        // Render to MRT
+        if (scene.prePassRenderer) {
+            scene.prePassRenderer.bindAttachmentsForEffect(effect);
+        }
+
         const effectiveMesh = effectiveMeshReplacement || this._effectiveMesh;
 
         var sideOrientation: Nullable<number>;
@@ -2801,7 +2825,7 @@ export class Mesh extends AbstractMesh implements IGetSetVerticesData {
             var pstring: Array<string> = new Array(); //lists facet vertex positions (a,b,c) as string "a|b|c"
 
             var indexPtr: number = 0; // pointer to next available index value
-            var uniquePositions: Array<string> = new Array(); // unique vertex positions
+            var uniquePositions: { [key: string]: number } = {}; // unique vertex positions
             var ptr: number; // pointer to element in uniquePositions
             var facet: Array<number>;
 
@@ -2817,7 +2841,6 @@ export class Mesh extends AbstractMesh implements IGetSetVerticesData {
                         }
                         pstring[j] += currentPositions[3 * facet[j] + k] + "|";
                     }
-                    pstring[j] = pstring[j].slice(0, -1);
                 }
                 //check facet vertices to see that none are repeated
                 // do not process any facet that has a repeated vertex, ie is a line
@@ -2826,9 +2849,9 @@ export class Mesh extends AbstractMesh implements IGetSetVerticesData {
                     // if not listed add to uniquePositions and set index pointer
                     // if listed use its index in uniquePositions and new index pointer
                     for (var j = 0; j < 3; j++) {
-                        ptr = uniquePositions.indexOf(pstring[j]);
-                        if (ptr < 0) {
-                            uniquePositions.push(pstring[j]);
+                        ptr = uniquePositions[pstring[j]];
+                        if (ptr === undefined) {
+                            uniquePositions[pstring[j]] = indexPtr;
                             ptr = indexPtr++;
                             //not listed so add individual x, y, z coordinates to positions
                             for (var k = 0; k < 3; k++) {
@@ -2973,6 +2996,7 @@ export class Mesh extends AbstractMesh implements IGetSetVerticesData {
     public serialize(serializationObject: any): void {
         serializationObject.name = this.name;
         serializationObject.id = this.id;
+        serializationObject.uniqueId = this.uniqueId;
         serializationObject.type = this.getClassName();
 
         if (Tags && Tags.HasTags(this)) {

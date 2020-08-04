@@ -1,9 +1,11 @@
 body {
-  background-color: rgb(51, 51, 51);
+  background-color: #333;
 }
 
 #animation-curve-editor {
-  font-family: acumin-pro-condensed;
+  background-color: rgb(51, 51, 51);
+  font-family: "acumin-pro-condensed";
+  background-color: #333333;
 
   .last {
     margin-left: 3px;
@@ -21,14 +23,14 @@ body {
       height: 20px;
     }
     &.babylon-logo {
-      background-image: url('./assets/babylonLogo.svg');
+      background-image: url("./assets/babylonLogo.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
     }
 
     &.close {
-      background-image: url('./assets/closeWindowIcon.svg');
+      background-image: url("./assets/closeWindowIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -37,7 +39,7 @@ body {
     }
 
     &.auto-tangent {
-      background-image: url('./assets/autoTangentIcon.svg');
+      background-image: url("./assets/autoTangentIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -53,7 +55,7 @@ body {
     }
 
     &.break-tangent {
-      background-image: url('./assets/breakTangentIcon.svg');
+      background-image: url("./assets/breakTangentIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -69,7 +71,7 @@ body {
     }
 
     &.flat-tangent {
-      background-image: url('./assets/flatTangentIcon.svg');
+      background-image: url("./assets/flatTangentIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -85,7 +87,7 @@ body {
     }
 
     &.frame {
-      background-image: url('./assets/frameIcon.svg');
+      background-image: url("./assets/frameIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -101,7 +103,7 @@ body {
     }
 
     &.linear-tangent {
-      background-image: url('./assets/linearTangentIcon.svg');
+      background-image: url("./assets/linearTangentIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -117,7 +119,7 @@ body {
     }
 
     &.unify-tangent {
-      background-image: url('./assets/unifyTangentIcon.svg');
+      background-image: url("./assets/unifyTangentIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -133,7 +135,7 @@ body {
     }
 
     &.add-animation {
-      background-image: url('./assets/addAnimationIcon.svg');
+      background-image: url("./assets/addAnimationIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -142,7 +144,7 @@ body {
     }
 
     &.animation-bullet {
-      background-image: url('./assets/animationBulletIcon.svg');
+      background-image: url("./assets/animationBulletIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -150,7 +152,7 @@ body {
     }
 
     &.animation-delete {
-      background-image: url('./assets/animationDeleteIcon.svg');
+      background-image: url("./assets/animationDeleteIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -159,7 +161,7 @@ body {
     }
 
     &.animation-edit {
-      background-image: url('./assets/editIcon.svg');
+      background-image: url("./assets/editIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -167,7 +169,7 @@ body {
     }
 
     &.animation-end {
-      background-image: url('./assets/animationEndIcon.svg');
+      background-image: url("./assets/animationEndIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -178,7 +180,7 @@ body {
     }
 
     &.animation-lastkey {
-      background-image: url('./assets/animationLastKeyIcon.svg');
+      background-image: url("./assets/animationLastKeyIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -186,12 +188,12 @@ body {
       cursor: pointer;
       background-position: center;
       &:hover {
-        background-image: url('./assets/animationLastKeyHoverIcon.svg');
+        background-image: url("./assets/animationLastKeyHoverIcon.svg");
       }
     }
 
     &.animation-nextkey {
-      background-image: url('./assets/animationNextKeyIcon.svg');
+      background-image: url("./assets/animationNextKeyIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -199,12 +201,12 @@ body {
       cursor: pointer;
       background-position: center;
       &:hover {
-        background-image: url('./assets/animationNextKeyHoverIcon.svg');
+        background-image: url("./assets/animationNextKeyHoverIcon.svg");
       }
     }
 
     &.animation-options {
-      background-image: url('./assets/animationOptionsIcon.svg');
+      background-image: url("./assets/animationOptionsIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -217,7 +219,7 @@ body {
     }
 
     &.animation-playfwd {
-      background-image: url('./assets/animationPlayFwdIcon.svg');
+      background-image: url("./assets/animationPlayFwdIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -227,12 +229,12 @@ body {
       cursor: pointer;
       background-position: center;
       &:hover {
-        background-image: url('./assets/animationPlayFwdHoverIcon.svg');
+        background-image: url("./assets/animationPlayFwdHoverIcon.svg");
       }
     }
 
     &.animation-playrev {
-      background-image: url('./assets/animationPlayRevIcon.svg');
+      background-image: url("./assets/animationPlayRevIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -242,12 +244,12 @@ body {
       cursor: pointer;
       background-position: center;
       &:hover {
-        background-image: url('./assets/animationPlayRevHoverIcon.svg');
+        background-image: url("./assets/animationPlayRevHoverIcon.svg");
       }
     }
 
     &.animation-start {
-      background-image: url('./assets/animationStartIcon.svg');
+      background-image: url("./assets/animationStartIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -259,7 +261,7 @@ body {
     }
 
     &.animation-stop {
-      background-image: url('./assets/animationStopIcon.svg');
+      background-image: url("./assets/animationStopIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -268,11 +270,10 @@ body {
       cursor: pointer;
       background-position: center;
       width: 20px;
-      margin-left: 10px;
     }
 
     &.animation-triangle {
-      background-image: url('./assets/animationTriangleIcon.svg');
+      background-image: url("./assets/animationTriangleIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -280,7 +281,7 @@ body {
     }
 
     &.key-active {
-      background-image: url('./assets/keyActiveIcon.svg');
+      background-image: url("./assets/keyActiveIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -288,7 +289,7 @@ body {
     }
 
     &.key-inactive {
-      background-image: url('./assets/keyInactiveIcon.svg');
+      background-image: url("./assets/keyInactiveIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -296,7 +297,7 @@ body {
     }
 
     &.key-selected {
-      background-image: url('./assets/keySelectedIcon.svg');
+      background-image: url("./assets/keySelectedIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -304,7 +305,7 @@ body {
     }
 
     &.loop-active {
-      background-image: url('./assets/loopActiveIcon.svg');
+      background-image: url("./assets/loopActiveIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -313,7 +314,7 @@ body {
     }
 
     &.loop-inactive {
-      background-image: url('./assets/loopInactiveIcon.svg');
+      background-image: url("./assets/loopInactiveIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -322,7 +323,7 @@ body {
     }
 
     &.move {
-      background-image: url('./assets/moveIcon.svg');
+      background-image: url("./assets/moveIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -330,7 +331,7 @@ body {
     }
 
     &.save {
-      background-image: url('./assets/saveIcon.svg');
+      background-image: url("./assets/saveIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -339,7 +340,7 @@ body {
     }
 
     &.load {
-      background-image: url('./assets/loadIcon.svg');
+      background-image: url("./assets/loadIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -348,7 +349,7 @@ body {
     }
 
     &.checked {
-      background-image: url('./assets/checkboxCheckedIcon.svg');
+      background-image: url("./assets/checkboxCheckedIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -356,7 +357,7 @@ body {
     }
 
     &.unchecked {
-      background-image: url('./assets/checkboxDefaultIcon.svg');
+      background-image: url("./assets/checkboxDefaultIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -364,7 +365,7 @@ body {
     }
 
     &.new-key {
-      background-image: url('./assets/newKeyIcon.svg');
+      background-image: url("./assets/newKeyIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -379,7 +380,7 @@ body {
     }
 
     &.scale {
-      background-image: url('./assets/scaleIcon.svg');
+      background-image: url("./assets/scaleIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -387,7 +388,7 @@ body {
     }
 
     &.scrollbar-handle {
-      background-image: url('./assets/scrollbarHandleIcon.svg');
+      background-image: url("./assets/scrollbarHandleIcon.svg");
       background-repeat: no-repeat;
       background-color: transparent;
       background-size: contain;
@@ -487,7 +488,7 @@ body {
       align-items: center;
       margin-right: 8px;
       input {
-        width: 75px;
+        width: 78px;
         height: 24px;
         color: white;
         font-size: 12px;
@@ -507,14 +508,15 @@ body {
     align-items: flex-start;
     justify-content: flex-start;
     flex-direction: column;
-    height: 462px;
+    height: calc(100vh - 40px);
 
     .row {
-      width: 1024px;
-      height: 427px;
+      width: auto;
+      height: auto;
       display: flex;
       flex-flow: row;
       background-color: #333333;
+      margin-bottom: auto;
     }
 
     .row-bottom {
@@ -535,12 +537,12 @@ body {
         height: 2.5rem;
 
         .display-line {
-          width: 75vw;
           height: 40px;
           overflow: hidden;
           margin-right: 0px;
           padding-left: 10px;
           padding-right: 10px;
+          width: 782px;
 
           &::-webkit-scrollbar {
             height: 0.4em;
@@ -560,6 +562,9 @@ body {
           width: 60px;
           margin-left: 10px;
           margin-right: 10px;
+          position: relative;
+          float: right;
+          bottom: 35px;
 
           input {
             text-align: center;
@@ -569,7 +574,7 @@ body {
             color: white;
             height: 25px;
             font-size: 15px;
-            font-family: acumin-pro-condensed;
+            font-family: "acumin-pro-condensed";
             &::-webkit-inner-spin-button,
             &::-webkit-outer-spin-button {
               appearance: none;
@@ -591,6 +596,8 @@ body {
             height: 25px;
             display: flex;
             align-items: center;
+            padding-left: 2px;
+            padding-right: 2px;
             .handle {
               display: flex;
               flex-direction: row;
@@ -602,6 +609,8 @@ body {
               .scrollbar {
                 cursor: pointer;
                 width: 100%;
+                height: 66px;
+                margin-top: -10px;
               }
 
               .left-grabber,
@@ -609,26 +618,42 @@ body {
                 display: flex;
                 align-items: center;
                 cursor: pointer;
+                padding-bottom: 8px;
+                height: 36px;
+                margin-top: -8px;
+                .text {
+                  pointer-events: none;
+                  margin: 0;
+                }
               }
 
-              .left-grabber {
-                padding-left: 3px;
+              .left-draggable,
+              .right-draggable {
+                display: flex;
+                align-items: center;
+                height: 20px;
+                width: 20px;
+                justify-content: center;
+                &:active {
+                  .grabber {
+                    background-color: #3d3d3d;
+                  }
+                }
               }
-              .right-grabber {
-                padding-right: 3px;
-              }
+
               .grabber {
                 background-color: #333333;
                 width: 2px;
                 height: 16px;
                 margin-right: 2px;
+                pointer-events: none;
               }
 
               .text {
                 margin-left: 10px;
                 margin-right: 10px;
                 font-size: 12px;
-                font-family: acumin-pro-condensed;
+                font-family: "acumin-pro-condensed";
                 color: #222222;
               }
             }
@@ -636,7 +661,7 @@ body {
         }
 
         .timeline-wrapper {
-          margin-top: -40px;
+          margin-top: -31px;
           margin-left: -2px;
         }
 
@@ -647,6 +672,7 @@ body {
           padding-left: 46px;
           padding-right: 46px;
           margin-left: 10px;
+          margin-top: -10px;
 
           .stop-container {
             width: 40px;
@@ -695,7 +721,7 @@ body {
                 -webkit-appearance: none;
                 margin: 0;
               }
-              font-family: acumin-pro-condensed;
+              font-family: "acumin-pro-condensed";
             }
           }
           p {
@@ -744,7 +770,7 @@ body {
             margin-top: 0px;
             button {
               margin-top: 0px;
-              font-family: acumin-pro-condensed;
+              font-family: "acumin-pro-condensed";
               padding-top: 1px;
             }
           }
@@ -765,7 +791,7 @@ body {
             width: 127px;
             background-color: #444;
             height: 20px;
-            font-family: acumin-pro-condensed;
+            font-family: "acumin-pro-condensed";
             padding-top: 0px;
           }
         }
@@ -776,7 +802,7 @@ body {
             font-size: 12px;
             width: 75px;
             text-align: center;
-            font-family: acumin-pro-condensed;
+            font-family: "acumin-pro-condensed";
           }
           .value {
             input {
@@ -784,7 +810,7 @@ body {
               background-color: #444444;
               border: none;
               height: 20px;
-              font-family: acumin-pro-condensed;
+              font-family: "acumin-pro-condensed";
               padding-bottom: 6px;
               padding-left: 6px;
               color: white;
@@ -806,7 +832,7 @@ body {
             margin: 0px;
             label {
               font-size: 12px;
-              font-family: acumin-pro-condensed;
+              font-family: "acumin-pro-condensed";
               display: flex;
               align-content: center;
               align-items: center;
@@ -847,7 +873,7 @@ body {
             margin-top: 0px;
             button {
               margin-top: 0px;
-              font-family: acumin-pro-condensed;
+              font-family: "acumin-pro-condensed";
               padding-top: 1px;
             }
           }
@@ -867,7 +893,7 @@ body {
             background-color: #444444;
             height: 20px;
             width: 105px;
-            font-family: acumin-pro-condensed;
+            font-family: "acumin-pro-condensed";
             padding-top: 1px;
           }
 
@@ -888,7 +914,7 @@ body {
             font-size: 12px;
             width: 75px;
             text-align: center;
-            font-family: acumin-pro-condensed;
+            font-family: "acumin-pro-condensed";
           }
           .value {
             input {
@@ -896,7 +922,7 @@ body {
               background-color: #444444;
               border: none;
               height: 20px;
-              font-family: acumin-pro-condensed;
+              font-family: "acumin-pro-condensed";
             }
           }
         }
@@ -906,7 +932,7 @@ body {
         display: block;
         position: absolute;
         background-color: #111111;
-        height: 377px;
+        height: calc(100vh - 120px);
         z-index: 10;
 
         .sub-header {
@@ -930,18 +956,19 @@ body {
 
           .confirm-buttons {
             grid-column-start: 2;
+            column-count: 2;
 
             .buttonLine {
               button {
-                width: 60px;
+                width: 52px;
                 height: 20px;
                 background-color: rgb(68, 68, 68);
                 color: white;
                 font-size: 12px;
                 line-height: 11px;
-                margin: 5px;
+                margin: 4px;
                 font-size: 10px;
-                font-family: acumin-pro-condensed;
+                font-family: "acumin-pro-condensed";
                 border: none;
               }
             }
@@ -961,7 +988,7 @@ body {
               height: auto;
             }
             &:before {
-              content: '';
+              content: "";
               background: none;
             }
             height: 20px;
@@ -982,7 +1009,7 @@ body {
             }
 
             .animation-bullet {
-              background-image: url('./assets/animationBulletIcon.svg');
+              background-image: url("./assets/animationBulletIcon.svg");
               background-repeat: no-repeat;
               background-color: transparent;
               background-size: contain;
@@ -996,7 +1023,7 @@ body {
 
             .animation-arrow {
               width: 30px;
-              background-image: url('./assets/animationTriangleIcon.svg');
+              background-image: url("./assets/animationTriangleIcon.svg");
               background-repeat: no-repeat;
               background-color: transparent;
               background-size: 10px;
@@ -1004,8 +1031,8 @@ body {
               background-position-x: 18px;
               cursor: pointer;
               &.flip {
-                transform: rotate(180deg);
-                background-position: 2px 50%;
+                transform: rotate(-90deg);
+                background-position: 10px 13px;
               }
             }
 
@@ -1018,7 +1045,7 @@ body {
 
               &.show {
                 display: block;
-                background-image: url('./assets/keySelectedIcon.svg');
+                background-image: url("./assets/keySelectedIcon.svg");
                 background-repeat: no-repeat;
                 background-color: transparent;
                 background-size: 10px;
@@ -1064,7 +1091,7 @@ body {
             border-radius: 0px;
             outline: 1px solid #ccc;
           }
-          font-family: acumin-pro-condensed;
+          font-family: "acumin-pro-condensed";
         }
 
         select {
@@ -1078,7 +1105,7 @@ body {
             border-radius: 0px;
             outline: 1px solid #ccc;
           }
-          font-family: acumin-pro-condensed;
+          font-family: "acumin-pro-condensed";
         }
       }
     }
@@ -1098,12 +1125,31 @@ body {
       height: 364px;
       width: 782px;
 
+      .switch-button {
+        background-color: black;
+        width: 30px;
+        height: 33px;
+        position: relative;
+        z-index: 100;
+        bottom: 33px;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        font-size: 12px;
+        font-weight: bold;
+        color: white;
+      }
+
       .linear {
         overflow: visible;
         border: 0px solid white;
         height: 100%;
         width: 100%;
         outline: none;
+
+        .svg-playhead {
+          cursor: pointer;
+        }
 
         svg {
           overflow: visible;
@@ -1119,7 +1165,7 @@ body {
         }
         text {
           fill: #555555;
-          font-family: 'acumin-pro-condensed';
+          font-family: "acumin-pro-condensed";
         }
 
         .control-point {
@@ -1189,11 +1235,10 @@ body {
 
   .buttonLine {
     height: 30px;
-    display: grid;
     align-items: center;
     justify-items: stretch;
 
-    input[type='file'] {
+    input[type="file"] {
       display: none;
     }
 

@@ -209,6 +209,10 @@ declare module "babylonjs-loaders/glTF/glTFFileLoader" {
          */
         createInstances: boolean;
         /**
+         * Defines if the loader should always compute the bounding boxes of meshes and not use the min/max values from the position accessor. Defaults to false.
+         */
+        alwaysComputeBoundingBox: boolean;
+        /**
          * Function called before loading a url referenced by the asset.
          */
         preprocessUrlAsync: (url: string) => Promise<string>;
@@ -315,6 +319,7 @@ declare module "babylonjs-loaders/glTF/glTFFileLoader" {
         private _loader;
         private _progressCallback?;
         private _requests;
+        private static magicBase64Encoded;
         /**
          * Name of the loader ("gltf")
          */
@@ -343,7 +348,7 @@ declare module "babylonjs-loaders/glTF/glTFFileLoader" {
         /** @hidden */
         canDirectLoad(data: string): boolean;
         /** @hidden */
-        directLoad(scene: Scene, data: string): any;
+        directLoad(scene: Scene, data: string): Promise<any>;
         /**
          * The callback that allows custom handling of the root url based on the response url.
          * @param rootUrl the original root url
@@ -1732,9 +1737,17 @@ declare module "babylonjs-loaders/glTF/2.0/glTFLoader" {
 }
 declare module "babylonjs-loaders/glTF/2.0/Extensions/EXT_lights_image_based" {
     import { Nullable } from "babylonjs/types";
+    import { BaseTexture } from "babylonjs/Materials/Textures/baseTexture";
     import { IScene } from "babylonjs-loaders/glTF/2.0/glTFLoaderInterfaces";
     import { IGLTFLoaderExtension } from "babylonjs-loaders/glTF/2.0/glTFLoaderExtension";
     import { GLTFLoader } from "babylonjs-loaders/glTF/2.0/glTFLoader";
+    module "babylonjs-gltf2interface" {
+        /** @hidden */
+        interface IEXTLightsImageBased_LightImageBased {
+            _babylonTexture?: BaseTexture;
+            _loaded?: Promise<void>;
+        }
+    }
     /**
      * [Specification](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Vendor/EXT_lights_image_based/README.md)
      */
@@ -1787,6 +1800,29 @@ declare module "babylonjs-loaders/glTF/2.0/Extensions/EXT_mesh_gpu_instancing" {
         dispose(): void;
         /** @hidden */
         loadNodeAsync(context: string, node: INode, assign: (babylonTransformNode: TransformNode) => void): Nullable<Promise<TransformNode>>;
+    }
+}
+declare module "babylonjs-loaders/glTF/2.0/Extensions/EXT_texture_webp" {
+    import { IGLTFLoaderExtension } from "babylonjs-loaders/glTF/2.0/glTFLoaderExtension";
+    import { GLTFLoader } from "babylonjs-loaders/glTF/2.0/glTFLoader";
+    import { ITexture } from "babylonjs-loaders/glTF/2.0/glTFLoaderInterfaces";
+    import { BaseTexture } from "babylonjs/Materials/Textures/baseTexture";
+    import { Nullable } from "babylonjs/types";
+    /**
+     * [Specification](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Vendor/EXT_texture_webp/)
+     */
+    export class EXT_texture_webp implements IGLTFLoaderExtension {
+        /** The name of this extension. */
+        readonly name: string;
+        /** Defines whether this extension is enabled. */
+        enabled: boolean;
+        private _loader;
+        /** @hidden */
+        constructor(loader: GLTFLoader);
+        /** @hidden */
+        dispose(): void;
+        /** @hidden */
+        _loadTextureAsync(context: string, texture: ITexture, assign: (babylonTexture: BaseTexture) => void): Nullable<Promise<BaseTexture>>;
     }
 }
 declare module "babylonjs-loaders/glTF/2.0/Extensions/KHR_draco_mesh_compression" {
@@ -2080,28 +2116,51 @@ declare module "babylonjs-loaders/glTF/2.0/Extensions/KHR_materials_variants" {
         /** @hidden */
         dispose(): void;
         /**
-         * Gets the list of available variant tag names for this asset.
+         * Gets the list of available variant names for this asset.
          * @param rootMesh The glTF root mesh
          * @returns the list of all the variant names for this model
          */
         static GetAvailableVariants(rootMesh: Mesh): string[];
         /**
-         * Select a variant given a variant tag name or a list of variant tag names.
+         * Gets the list of available variant names for this asset.
+         * @param rootMesh The glTF root mesh
+         * @returns the list of all the variant names for this model
+         */
+        getAvailableVariants(rootMesh: Mesh): string[];
+        /**
+         * Select a variant given a variant name or a list of variant names.
          * @param rootMesh The glTF root mesh
          * @param variantName The variant name(s) to select.
          */
         static SelectVariant(rootMesh: Mesh, variantName: string | string[]): void;
+        /**
+         * Select a variant given a variant name or a list of variant names.
+         * @param rootMesh The glTF root mesh
+         * @param variantName The variant name(s) to select.
+         */
+        selectVariant(rootMesh: Mesh, variantName: string | string[]): void;
         /**
          * Reset back to the original before selecting a variant.
          * @param rootMesh The glTF root mesh
          */
         static Reset(rootMesh: Mesh): void;
         /**
-         * Gets the last selected variant tag name(s) or null if original.
+         * Reset back to the original before selecting a variant.
          * @param rootMesh The glTF root mesh
-         * @returns The selected variant tag name(s).
+         */
+        reset(rootMesh: Mesh): void;
+        /**
+         * Gets the last selected variant name(s) or null if original.
+         * @param rootMesh The glTF root mesh
+         * @returns The selected variant name(s).
          */
         static GetLastSelectedVariant(rootMesh: Mesh): Nullable<string | string[]>;
+        /**
+         * Gets the last selected variant name(s) or null if original.
+         * @param rootMesh The glTF root mesh
+         * @returns The selected variant name(s).
+         */
+        getLastSelectedVariant(rootMesh: Mesh): Nullable<string | string[]>;
         private static _GetExtensionMetadata;
         /** @hidden */
         _loadMeshPrimitiveAsync(context: string, name: string, node: INode, mesh: IMesh, primitive: IMeshPrimitive, assign: (babylonMesh: AbstractMesh) => void): Nullable<Promise<AbstractMesh>>;
@@ -2429,6 +2488,7 @@ declare module "babylonjs-loaders/glTF/2.0/Extensions/ExtrasAsMetadata" {
 declare module "babylonjs-loaders/glTF/2.0/Extensions/index" {
     export * from "babylonjs-loaders/glTF/2.0/Extensions/EXT_lights_image_based";
     export * from "babylonjs-loaders/glTF/2.0/Extensions/EXT_mesh_gpu_instancing";
+    export * from "babylonjs-loaders/glTF/2.0/Extensions/EXT_texture_webp";
     export * from "babylonjs-loaders/glTF/2.0/Extensions/KHR_draco_mesh_compression";
     export * from "babylonjs-loaders/glTF/2.0/Extensions/KHR_lights_punctual";
     export * from "babylonjs-loaders/glTF/2.0/Extensions/KHR_materials_pbrSpecularGlossiness";
@@ -3018,6 +3078,10 @@ declare module BABYLON {
          */
         createInstances: boolean;
         /**
+         * Defines if the loader should always compute the bounding boxes of meshes and not use the min/max values from the position accessor. Defaults to false.
+         */
+        alwaysComputeBoundingBox: boolean;
+        /**
          * Function called before loading a url referenced by the asset.
          */
         preprocessUrlAsync: (url: string) => Promise<string>;
@@ -3124,6 +3188,7 @@ declare module BABYLON {
         private _loader;
         private _progressCallback?;
         private _requests;
+        private static magicBase64Encoded;
         /**
          * Name of the loader ("gltf")
          */
@@ -3152,7 +3217,7 @@ declare module BABYLON {
         /** @hidden */
         canDirectLoad(data: string): boolean;
         /** @hidden */
-        directLoad(scene: Scene, data: string): any;
+        directLoad(scene: Scene, data: string): Promise<any>;
         /**
          * The callback that allows custom handling of the root url based on the response url.
          * @param rootUrl the original root url
@@ -4470,6 +4535,11 @@ declare module BABYLON.GLTF2 {
     }
 }
 declare module BABYLON.GLTF2.Loader.Extensions {
+        /** @hidden */
+        interface IEXTLightsImageBased_LightImageBased {
+            _babylonTexture?: BaseTexture;
+            _loaded?: Promise<void>;
+        }
     /**
      * [Specification](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Vendor/EXT_lights_image_based/README.md)
      */
@@ -4517,6 +4587,24 @@ declare module BABYLON.GLTF2.Loader.Extensions {
         dispose(): void;
         /** @hidden */
         loadNodeAsync(context: string, node: INode, assign: (babylonTransformNode: TransformNode) => void): Nullable<Promise<TransformNode>>;
+    }
+}
+declare module BABYLON.GLTF2.Loader.Extensions {
+    /**
+     * [Specification](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Vendor/EXT_texture_webp/)
+     */
+    export class EXT_texture_webp implements IGLTFLoaderExtension {
+        /** The name of this extension. */
+        readonly name: string;
+        /** Defines whether this extension is enabled. */
+        enabled: boolean;
+        private _loader;
+        /** @hidden */
+        constructor(loader: GLTFLoader);
+        /** @hidden */
+        dispose(): void;
+        /** @hidden */
+        _loadTextureAsync(context: string, texture: ITexture, assign: (babylonTexture: BaseTexture) => void): Nullable<Promise<BaseTexture>>;
     }
 }
 declare module BABYLON.GLTF2.Loader.Extensions {
@@ -4762,28 +4850,51 @@ declare module BABYLON.GLTF2.Loader.Extensions {
         /** @hidden */
         dispose(): void;
         /**
-         * Gets the list of available variant tag names for this asset.
+         * Gets the list of available variant names for this asset.
          * @param rootMesh The glTF root mesh
          * @returns the list of all the variant names for this model
          */
         static GetAvailableVariants(rootMesh: Mesh): string[];
         /**
-         * Select a variant given a variant tag name or a list of variant tag names.
+         * Gets the list of available variant names for this asset.
+         * @param rootMesh The glTF root mesh
+         * @returns the list of all the variant names for this model
+         */
+        getAvailableVariants(rootMesh: Mesh): string[];
+        /**
+         * Select a variant given a variant name or a list of variant names.
          * @param rootMesh The glTF root mesh
          * @param variantName The variant name(s) to select.
          */
         static SelectVariant(rootMesh: Mesh, variantName: string | string[]): void;
+        /**
+         * Select a variant given a variant name or a list of variant names.
+         * @param rootMesh The glTF root mesh
+         * @param variantName The variant name(s) to select.
+         */
+        selectVariant(rootMesh: Mesh, variantName: string | string[]): void;
         /**
          * Reset back to the original before selecting a variant.
          * @param rootMesh The glTF root mesh
          */
         static Reset(rootMesh: Mesh): void;
         /**
-         * Gets the last selected variant tag name(s) or null if original.
+         * Reset back to the original before selecting a variant.
          * @param rootMesh The glTF root mesh
-         * @returns The selected variant tag name(s).
+         */
+        reset(rootMesh: Mesh): void;
+        /**
+         * Gets the last selected variant name(s) or null if original.
+         * @param rootMesh The glTF root mesh
+         * @returns The selected variant name(s).
          */
         static GetLastSelectedVariant(rootMesh: Mesh): Nullable<string | string[]>;
+        /**
+         * Gets the last selected variant name(s) or null if original.
+         * @param rootMesh The glTF root mesh
+         * @returns The selected variant name(s).
+         */
+        getLastSelectedVariant(rootMesh: Mesh): Nullable<string | string[]>;
         private static _GetExtensionMetadata;
         /** @hidden */
         _loadMeshPrimitiveAsync(context: string, name: string, node: INode, mesh: IMesh, primitive: IMeshPrimitive, assign: (babylonMesh: AbstractMesh) => void): Nullable<Promise<AbstractMesh>>;
